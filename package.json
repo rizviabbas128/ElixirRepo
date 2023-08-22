@@ -1,0 +1,24 @@
+{
+  "name": "callrecord",
+  "version": "1.0.0",
+  "description": "callrecord",
+  "main": "App.js",
+  "scripts": {
+    "start": "node ./dist/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./src/app.ts"
+  },
+  "author": "Abbas Rizvi",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.4.3",
+    "nodemon": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.5.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6"
+  }
+}
