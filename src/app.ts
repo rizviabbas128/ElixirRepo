@@ -19,54 +19,33 @@ interface CustomerRecord {
 }
 
 app.get('/masterdata', (req: Request, res: Response) => {
-    const CustomerData = customerRecords.map((item: CustomerRecord) => {
-        return {
-            id: item.id,
-            type: item.type,
-            domain: item.domain,
-            direction: item.direction,
-            from_num: item.from_num,
-            text: item.text,
-            fromName: item.fromName,
-            userId: item.userId,
-            toName: item.toName,
-            timestamp: item.timestamp,
-        }
-    })
-    return res.status(200).json({
-        CustomerData
-    })
-})
+    const userIds: number[] = customerRecords.map((item: CustomerRecord) => item.userId);
+    return res.redirect(`/callrecord/${userIds.join(',')}`);
+});
 
-
-app.get('/callrecord', (req: Request, res: Response) => {
-
-    const sortedData = customerRecords.sort((a: CustomerRecord, b: CustomerRecord) => {
+app.get('/callrecord/:ids', (req: Request, res: Response) => {
+    const receivedIds: number[] = req.params.ids.split(',').map(id => parseInt(id, 10));
+    const masterData: CustomerRecord[] = customerRecords.filter(item => receivedIds.includes(item.userId));
+    
+    const sortedData: CustomerRecord[] = customerRecords.sort((a, b) => {
         const timestampA = new Date(a.timestamp).getTime();
         const timestampB = new Date(b.timestamp).getTime();
         return timestampA - timestampB;
     });
 
     const uniqueData: CustomerRecord[] = [];
-    const seenIds = new Set<number>();
-    sortedData.forEach((item: CustomerRecord) => {
+    const seenIds: Set<number> = new Set();
+    sortedData.forEach(item => {
         if (!seenIds.has(item.userId)) {
             seenIds.add(item.userId);
             uniqueData.push(item);
         }
     });
 
-    const callRecord = uniqueData.map((item: CustomerRecord) => {
-        return {
-            name: item.fromName,
-            phoneNumber: item.from_num,
-            id: item.userId,
-            startTime: item.timestamp,
-            callType: item.type
-        };
-    });
+    const callRecord: CustomerRecord[] = uniqueData.filter(item => receivedIds.includes(item.userId));
 
-    return res.json({
+    return res.status(200).json({
+        masterData,
         callRecord
     });
 });
